@@ -1,7 +1,9 @@
 require('dotenv').config();
 
 const { Client, Intents, MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
-const listener = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const listener = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
+const { Player } = require("discord-player");
+const player = new Player(listener);
 
 const https    = require('https');
 const parser   = require("xml2js");
@@ -90,6 +92,36 @@ listener.on('messageCreate', msg => {
 
     global.math = function math(deger) {
         msg.reply("Result = " + String(eval(deger)));
+    }
+
+    global.play = function play(query) {
+        if (!msg.member.voice.channelId) return msg.reply({ content: "You are not in a voice channel!", ephemeral: true });
+        if (msg.guild.me.voice.channelId && msg.member.voice.channelId !== msg.guild.me.voice.channelId) return msg.reply({ content: "You are not in my voice channel!", ephemeral: true });
+        
+        const queue = player.createQueue(msg.guild, {
+            metadata: {
+                channel: msg.channel
+            }
+        });
+
+        try {
+            if (!queue.connection) queue.connect(msg.member.voice.channel);
+        } catch {
+            queue.destroy();
+            return msg.reply({ content: "Could not join your voice channel!", ephemeral: true });
+        }
+
+        const track = player.search(query, {
+            requestedBy: msg.user
+        }).then(x => x.tracks[0]);
+
+        if (!track || track === "undefined") return msg.reply({ content: `❌ | Track **${query}** not found!` });
+
+        track.then(function (song){
+            queue.play(song);
+
+            return msg.reply({ content: `⏱️ | Loading track **${song.title}**!` });
+        });
     }
 
     const matches = [...msg.content.matchAll(regexp)];
