@@ -1,7 +1,7 @@
 {
   "name": "discordbot",
   "version": "16.15.1",
-  "main": "index.js",
+  "main": "node.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -242,5 +242,3 @@ listener.on('messageCreate', msg => {
     global[command](parameter);
     return;
 });
-
-
