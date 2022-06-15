@@ -1,18 +1,54 @@
 require('dotenv').config();
 
 const { Client, Intents, MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
-const listener = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
 const { Player } = require("discord-player");
-const player = new Player(listener);
+
+const listener   = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
+const player     = new Player(listener);
 
 const https    = require('https');
 const parser   = require("xml2js");
 const request  = require('request');
 
 const regexp   = /^([\w|\W])(\S+)([\w|\W]*)/g;
-
-var queue, track, playMessage;
-
+const commandUsages = [
+    {
+        command: '?me',
+        description: 'Sunucudaki Nickinizi Gösterir',
+        example: '',
+    },
+    {
+        command: '?lanteko',
+        description: 'Tekoyu Çağırır',
+        example: '',
+    },
+    {
+        command: '?currency',
+        description: 'Canlı Döviz Kurlarını Gösterir',
+        example: '',
+    },
+    {
+        command: '?shortlink',
+        description: "Verdiğiniz Link'i Kısaltır",
+        example: '?shortlink www.youtube.com',
+    },
+    {
+        command: '?math',
+        description: 'İşlem Yapar',
+        example: '?math 10/2',
+    },
+    {
+        command: '?play',
+        description: 'İstediğiniz Şarkıyı Çalar',
+        example: '?play (youtube araması) ya da (URL)',
+    },
+    {
+        command: '?stop',
+        description: 'Açtığınız Şarkıyı Durdurur ve Ses Kanalından Çıkar',
+        example: '',
+    },
+];
+var queue, track, playMessage,listUsages = "";
 
 listener.on('ready', () => {
   console.log(`Logged in as ${listener.user.tag}!`);
@@ -90,7 +126,10 @@ listener.on('messageCreate', msg => {
             }
         };
         request(options, function (error, response) {
-            if (error) throw new Error(error);
+            if (error) {
+                console.log(error);
+                throw new Error(error);
+            }
             const embed = new MessageEmbed()
                 .setColor('#000000')
                 .setTitle("Link'e Gider ✓")
@@ -116,7 +155,9 @@ listener.on('messageCreate', msg => {
         });
 
         try {
-            if (!queue.connection) queue.connect(msg.member.voice.channel);
+            if (!queue.connection) {
+                queue.connect(msg.member.voice.channel);
+            }
         } catch {
             queue.destroy();
             return msg.reply({ content: "Could not join your voice channel!", ephemeral: true });
@@ -126,84 +167,59 @@ listener.on('messageCreate', msg => {
             requestedBy: msg.user
         }).then(x => x.tracks[0]);
 
-        if (!track || track === "undefined") return msg.reply({ content: `❌ | Track **${query}** not found!` });
+        if (!track || track === "undefined") {
+            return msg.reply({ content: `❌ | Track **${query}** not found!` });
+        }
 
         track.then(function (song){
             track = song;
             queue.play(track);
-            /*
-            const row = new MessageActionRow()
-			.addComponents(
-				new MessageButton()
-					.setCustomId('primary')
-					.setLabel('Primary')
-					.setStyle('PRIMARY')
-                    .setColor('#0099ff')
-                    .setTitle('Some title')
-                    .setURL('https://discord.js.org')
-                    .setDescription('Some description here')
-			);
-            */
 
             const embed = new MessageEmbed()
                 .setColor('#ff0000')
                 .setTitle('*🎶 Playing ↴*')
-                //.setURL('https://discord.js.org/')
                 .setAuthor({ name: userName, iconURL: userAvatar })
                 .setDescription(`**╠  ${track.title}  ╣**`)
                 .setThumbnail(botAvatar)
-                /*.addFields(
-                    { name: 'Regular field title', value: 'Some value here' },
-                    { name: '\u200B', value: '\u200B' },
-                    { name: 'Inline field title', value: 'Some value here', inline: true },
-                    { name: 'Inline field title', value: 'Some value here', inline: true },
-                )
-                */
-                //.addField('Inline field title', 'Some value here', true)
                 .setTimestamp()
                 .setFooter({ text: botName, iconURL: "" });
 
-                msg.reply({ embeds: [embed] }).then(function(response){
-                    playMessage = response;
-                });  
-                return;
-            
+            msg.reply({ embeds: [embed] }).then(function(response){
+                playMessage = response;
+            });  
         });
     }
 
     global.stop = function stop() {
         queue.destroy(true);
         const embed = new MessageEmbed()
-                .setColor('#ff0000')
-                .setTitle('*🚫  Stopped ↴*')
-                //.setURL('https://discord.js.org/')
-                .setAuthor({ name: userName, iconURL: userAvatar })
-                .setDescription(`**╠  ${track.title}  ╣**`)
-                .setThumbnail(botAvatar)
-                /*.addFields(
-                    { name: 'Regular field title', value: 'Some value here' },
-                    { name: '\u200B', value: '\u200B' },
-                    { name: 'Inline field title', value: 'Some value here', inline: true },
-                    { name: 'Inline field title', value: 'Some value here', inline: true },
-                )
-                */
-                //.addField('Inline field title', 'Some value here', true)
-                .setTimestamp()
-                .setFooter({ text: botName, iconURL: "" });
+            .setColor('#ff0000')
+            .setTitle('*🚫  Stopped ↴*')
+            .setAuthor({ name: userName, iconURL: userAvatar })
+            .setDescription(`**╠  ${track.title}  ╣**`)
+            .setThumbnail(botAvatar)
+            .setTimestamp()
+            .setFooter({ text: botName, iconURL: "" });
             
-            msg.reply({ embeds: [embed] }).then(function(response){
-                playMessage.delete();
-            });
-            return;       
+        msg.reply({ embeds: [embed] }).then(function(response){
+            playMessage.delete();
+        });
     }
 
     global.help = function help() {
+        commandUsages.forEach(function(commandObj) {
+            if(commandObj.example.length > 0) {
+                listUsages += "**" + commandObj.command + " : **" + commandObj.description + "\n___Örnek Kullanım___ ** : ** " + commandObj.example + "\n\n";
+                return;
+            }
+            listUsages += "**" + commandObj.command + " : ** " + commandObj.description + "\n\n";
+        });
         const embed = new MessageEmbed()
-                .setColor('#ffffff')
-                .setTitle("Commands Helper ✓")
-                .setDescription("**?me : **Sunucudaki Nickinizi Gösterir\n\n**?lanteko : **Tekoyu Çağırır\n\n**?currency : **Canlı Döviz Kurlarını Gösterir\n\n**?shortlink : **Verdiğiniz Link'i Kısaltır \n___Örnek Kullanım___ **:** *?shortlink www.youtube.com*\n\n**?math : **İşlem Yapar \n___Örnek Kullanım___ **:** *?math 10/2*\n\n**?play :** İstediğiniz Şarkıyı Çalar \n___Örnek Kullanım___ **:** *?play (youtube araması) ya da (URL)*\n\n**?stop :** Açtığınız Şarkıyı Durdurur ve Ses Kanalından Çıkar")
-                
-            msg.reply({ embeds: [embed] });
+            .setColor('#ffffff')
+            .setTitle("Commands Helper ✓")
+            .setDescription(listUsages);
+            
+        msg.reply({ embeds: [embed] });
     }
 
     const matches = [...msg.content.matchAll(regexp)];
