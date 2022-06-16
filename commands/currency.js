@@ -30,11 +30,11 @@ module.exports = class Currency extends CommandAbstract {
                     datams += isim + " : " + sell + "\n";
                 }
 
-                return message.reply(datams);
+                message.reply(datams);
             });
         }).
         on('error', (error) => {
-            return console.log(error);
+            console.log(error);
         });
     }
 };
