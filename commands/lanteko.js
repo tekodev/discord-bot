@@ -7,6 +7,6 @@ module.exports = class Lanteko extends CommandAbstract {
     }
     
     execute(message) {
-        return message.reply('Efendim Abi');
+        message.reply('Efendim Abi');
     }
 };

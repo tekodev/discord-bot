@@ -7,6 +7,6 @@ module.exports = class Tako extends CommandAbstract {
     }
     
     execute(message) {
-        return message.reply('Merhaba Tarkan Bey');
+        message.reply('Merhaba Tarkan Bey');
     }
 };

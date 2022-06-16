@@ -32,7 +32,7 @@ module.exports = class Stop extends CommandAbstract {
             .setTimestamp()
             .setFooter({ text: botName, iconURL: "" });
             
-        return message.reply({ embeds: [embed] }).then(function(response){
+        message.reply({ embeds: [embed] }).then(function(response){
             message.fetch(playMessage.id).then(msg => msg.delete());
         });
     }

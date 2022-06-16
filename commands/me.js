@@ -7,6 +7,6 @@ module.exports = class Me extends CommandAbstract {
     }
     
     execute(message) {
-        return message.reply("Merhaba " + `${message.member}`);
+        message.reply("Merhaba " + `${message.member}`);
     }
 };

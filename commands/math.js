@@ -7,6 +7,6 @@ module.exports = class Math extends CommandAbstract {
     }
     
     execute(process) {
-        return message.reply("Result = " + String(eval(process)));
+        message.reply("Result = " + String(eval(process)));
     }
 };

@@ -24,6 +24,6 @@ module.exports = class Help extends CommandAbstract {
             .setTitle("Commands Helper ✓")
             .setDescription(listUsages);
 
-        return message.reply({ embeds: [embed] });
+        message.reply({ embeds: [embed] });
     }
 };

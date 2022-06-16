@@ -7,6 +7,6 @@ module.exports = class Teko extends CommandAbstract {
     }
     
     execute(message) {
-        return message.reply('Merhaba Burak Bey');
+        message.reply('Merhaba Burak Bey');
     }
 };

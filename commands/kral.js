@@ -7,6 +7,6 @@ module.exports = class Kral extends CommandAbstract {
     }
     
     execute(message) {
-        return message.reply("Kralımız <@419132270796996610>");
+        message.reply("Kralımız <@419132270796996610>");
     }
 };

@@ -27,7 +27,7 @@ module.exports = class Shortlink extends CommandAbstract {
                 .setTitle("Link'e Gider ✓")
                 .setURL("http://" + response.body)
                 .setDescription(response.body);
-            return message.reply({ embeds: [embed] });
+            message.reply({ embeds: [embed] });
         });
     }
 };
