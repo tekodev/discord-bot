@@ -30,7 +30,7 @@ listener.on('ready', () => {
     
     if(commandInterface !== "undefined" && commandInterface instanceof Play && command === "stop") {
         commandInterface = new Stop();
-        return commandInterface.execute(msg, parameter, listener, resp);
+        return commandInterface.execute(msg, parameter, listener, response);
     }
     
     commandInterface = CommandFactory.handle(command);
