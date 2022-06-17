@@ -7,7 +7,7 @@ const listener            = new Client({ intents: [Intents.FLAGS.GUILDS, Intents
 
 const regexp   = /^([\w|\W])(\S+)([\w|\W]*)/g;
 
-var commandInterface, response;
+var commandInterface, response, queue;
 listener.on('ready', () => {
     console.log(`Logged in as ${listener.user.tag}!`);
   });
@@ -28,9 +28,9 @@ listener.on('ready', () => {
         parameter = "";
     }
     
-    if(commandInterface !== "undefined" && commandInterface instanceof Play && command === "stop") {
+    if(commandInterface !== "undefined" && command === "stop") {
         commandInterface = new Stop();
-        return commandInterface.execute(msg, parameter, listener, response);
+        return commandInterface.execute(msg, parameter, listener, queue);
     }
     
     commandInterface = CommandFactory.handle(command);
@@ -39,4 +39,7 @@ listener.on('ready', () => {
     }
 
     response = commandInterface.execute(msg, parameter, listener);
+    if(command === "play") {
+        queue = response;
+    }
   });
