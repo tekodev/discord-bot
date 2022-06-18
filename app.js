@@ -19,6 +19,9 @@ listener.on('ready', () => {
         return;
     }
 
+    process.env['BOT_AVATAR'] = `${listener.user.displayAvatarURL({format : 'png'})}`;
+    process.env['BOT_NAME']   = `${listener.user.username}`;
+
     const matches = [...msg.content.matchAll(regexp)];
     var command = matches[0][2].toString().trim();
     var parameter;

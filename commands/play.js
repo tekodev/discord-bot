@@ -43,9 +43,9 @@ module.exports = class Play extends CommandAbstract {
         }
 
         const userAvatar = `${message.author.displayAvatarURL({format : 'png'})}`;
-        const botAvatar  = `${listener.user.displayAvatarURL({format : 'png'})}`;
         const userName   = `${message.author.username}`;
-        const botName    = `${listener.user.username}`;
+        const botAvatar  = process.env.BOT_AVATAR;
+        const botName    = process.env.BOT_NAME;
 
         track.then(function (song){
             track = song;
@@ -65,8 +65,6 @@ module.exports = class Play extends CommandAbstract {
             });
 
             process.env['TRACK'] = JSON.stringify(track);
-            process.env['BOT_AVATAR'] = botAvatar;
-            process.env['BOT_NAME'] = botName;
         });
         return queue;
     }

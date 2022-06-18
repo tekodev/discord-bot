@@ -14,7 +14,8 @@ module.exports = class Stop extends CommandAbstract {
             return message.reply({ content: "The track is not playing right now.", ephemeral: true });
         }
 
-        queue.destroy(true);
+        queue.clear();
+        queue.destroy();
         const userAvatar = `${message.author.displayAvatarURL({format : 'png'})}`;
         const botAvatar  = process.env.BOT_AVATAR;
         const userName   = `${message.author.username}`;
